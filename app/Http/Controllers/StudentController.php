@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Notifications\Notification;
+use App\Notifications\SaveNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StudentController extends Controller
 {
@@ -21,12 +24,18 @@ class StudentController extends Controller
 
     public function store(Request $request){
         $student = new Student();
+        $user=Auth::user();
         $student->cne = $request->input('cne');
         $student->firstName = $request->input('firstName');
         $student->secondName = $request->input('secondName');
         $student->age = $request->input('age');
         $student->speciality = $request->input('speciality');
+        $data=[
+            "text"=>'student has been add'
+        ];
         $student->save();
+
+        $user->notify(new SaveNotification($data));
         return redirect('/');
     }
 
